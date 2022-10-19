@@ -1,9 +1,11 @@
 <?php
 
-require_once ("config.php");
+require_once("config.php");
 
-$sql = new Sql();
+$root = new Usuario();
 
-$usuarios = $sql->query("SELECT * FROM tb_usuarios");
+$root->loadbyId(3);
 
-echo json_encode($usuarios);
+echo $root;
+
+?>

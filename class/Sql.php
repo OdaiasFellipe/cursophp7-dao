@@ -1,47 +1,52 @@
 <?php
-class  Sql extends PDO{
+
+class Sql extends PDO {
 
     private $conn;
 
+    public function __construct() {
 
-    public function __construct()
-    {
-        $this->conn = new PDO("mysql:host=localhost;dbname=teste", "root","");
+        $this->conn = new PDO("mysql:host=localhost;dbname=teste", "root", "");
 
     }
-    private function setParams($statment, $parameters = array())
-    {
+
+    private function setParams($statement, $parameters = array()) {
 
         foreach ($parameters as $key => $value) {
 
-            $statment->bindParam($key, $value);
-
+            $this->setParam($statement, $key, $value);
 
         }
+
     }
 
-    private function setParam($statment,$key,$value){
-        $statment->bindParam($key,$value);
+    private function setParam($statement, $key, $value){
+
+        $statement->bindParam($key, $value);
+
     }
-    public function query($rawQuery, $params= array())
+
+    public function query($rawQuery, $params = array()) {
+
+        $stmt = $this->conn->prepare($rawQuery);
+
+        $this->setParams($stmt, $params);
+
+        $stmt->execute();
+
+        return $stmt;
+
+    }
+
+    public function select($rawQuery, $params = array()):array
     {
-      $stmt = $this->conn->prepare($rawQuery);
 
-      foreach ($params as $key => $value){
+        $stmt = $this->query($rawQuery, $params);
 
-          $stmt->bindParam($key, $value);
-
-          $this->setParams($stmt,$params);
-
-          $stmt->execute();
-          return $stmt;
-
-      }
-    }
-      public function select($rawQuery, $params = array()){
-       $stmt = $this->query($rawQuery,$params);
-
-     return $stmt ->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     }
-    }
+
+}
+
+?>
